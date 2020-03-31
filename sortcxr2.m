@@ -2,20 +2,19 @@ clc
 clear
 close all
 
-data = readtable('/Users/oviyat/Desktop/CX/data/Data_Entry_2017.csv');
-classes = data(:,2);
+source = '/Users/oviyat/Desktop/CX';
+data = readtable([source '/data/Data_Entry_2017.csv']);
 
-lenclasses = size(classes);
-lenclasses = lenclasses(1);
+classes = data.Var2;
+lenclasses = size(classes,1);
 
-classes = classes.Var2;
 cardio = zeros(lenclasses,1); %cardiomegaly only array
 edema = zeros(lenclasses,1); %edema only array
 healthy = zeros(lenclasses,1); %healthy array
 
-
 for i = 1:lenclasses
-    diseases = strsplit(cell2mat(classes(i,1)),'|');
+    disp(['Image ' num2str(i) ' out of ' num2str(lenclasses)]);
+    diseases = strsplit(cell2mat(classes(i)),'|');
     lend = length(diseases);
     if lend == 1
         if isequal(cell2mat(diseases(1)),'Cardiomegaly')
@@ -33,9 +32,7 @@ totcardio = sum(cardio);
 totedema = sum(edema);
 tothealthy = sum(healthy);
 
-filenames = data(:,1);
-
-filenames = filenames.Var1;
+filenames = data.Var1;
 
 [rc,~] = find(cardio); %index values for cardiomegaly
 [re,~] = find(edema); %index values for edema
@@ -45,16 +42,16 @@ filenames = filenames.Var1;
 
 for i = 1:length(rc)
     car = filenames{rc(i),1};
-    filename = ['/Users/oviyat/Desktop/CX/theimages/',car];
-    A = imread(filename);
-    imwrite(A,['/Users/oviyat/Desktop/CX/cardiomegaly2/',car]);
+    filename = [source '/theimages/' car];
+    dest = [source '/cardiomegaly2/' car];
+    movefile(filename,dest);
 end
 
 for i = 1:length(re)
     ed = filenames{re(i),1};
-    filename = ['/Users/oviyat/Desktop/CX/theimages/',ed];
-    A = imread(filename);
-    imwrite(A,['/Users/oviyat/Desktop/CX/edema2/',ed]);
+    filename = [source '/theimages/' ed];
+    dest = [source '/edema2/' ed];
+    movefile(filename,dest);
 end
 
 
