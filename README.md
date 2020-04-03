@@ -13,3 +13,5 @@ https://github.com/taiftahmid/Lung-Disease-Classification-using-Resnet50/blob/ma
 siamese code:
 https://github.com/nishit94/Python-Siamese-Network/blob/master/Siamese%20Network.py
 
+sortcxr4 also downsamples the images. 
+
