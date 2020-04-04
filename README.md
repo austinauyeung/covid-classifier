@@ -1,5 +1,5 @@
 # SML_Project
-Statistical Mechine Learning Project
+Statistical Machine Learning Project
 
 code for CNN:
 https://github.com/sasonhuang/Digital-Radiography (nih?, resnet50, c: 0.896, e: 0.882)
