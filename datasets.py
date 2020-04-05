@@ -74,7 +74,7 @@ def get_train_tfrecord(imgs_path, data_entry_path, data_label_path, split_list_p
             mask_lambda = np.zeros(shape=[label_num], dtype=np.float32)
             for label in labels:
                 for j in range(label_num):
-                    oviyalabel = next(iter(finding_labels))
+                    oviyalabel = list(finding_labels)[j]
                     mask_lambda[j] = (0.0 + Q - data_label_dict[oviyalabel]) / Q
                     # oviya changed this above: mask_lambda[j] = (0.0 + Q - data_label_dict[finding_labels[j]]) / Q
                     if label == oviyalabel:
@@ -125,7 +125,7 @@ def main():
     data_entry_path = 'data/data_entry.json'
     data_label_path = 'data/data_label.json'
     train_val_list_path = 'data/train_val_list.txt'
-    #get_train_tfrecord(imgs_path, data_entry_path, data_label_path, train_val_list_path, mode='train', D=40)
+    get_train_tfrecord(imgs_path, data_entry_path, data_label_path, train_val_list_path, mode='train', D=40)
     test_list_path = 'data/test_list.txt'
     get_train_tfrecord(imgs_path, data_entry_path, data_label_path, test_list_path, mode='test', D=15)
 

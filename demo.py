@@ -11,7 +11,8 @@ image_path = 'data/examples/CXR3_IM-1384-1001.png'
 FLAGS = tf.app.flags.FLAGS
 tf.flags.DEFINE_string('img', 'data/examples/CXR3_IM-1384-1001.png', 'The test image path')
 
-model_path = 'data/model/my-test-68000'
+model_path = 'data/model/my-test-82000'
+#oviya changed: model_path = 'data/model/my-test-68000'
 data_label_path = 'data/data_label.json'
 
 md = Model(is_training=False, batch_size=1)
@@ -22,6 +23,7 @@ with open(data_label_path, 'r') as file:
 saver = tf.train.Saver()
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
+    #oviya didnt do anything
     saver.restore(sess, model_path)
 
     images = np.zeros([md.batch_size, md.image_size, md.image_size, 3])
@@ -34,5 +36,5 @@ with tf.Session() as sess:
     predictions = sess.run(md.predictions, feed_dict=feed_dict)
 
     for j in range(md.label_num):
-        print('disease \'%s\', prob = %s' % (labels[j], round(predictions[0][j], 5)))
-
+        print('disease \'%s\', prob = %s' % (list(labels)[j], round(predictions[0][j], 5)))
+        # oviya changed above line from: print('disease \'%s\', prob = %s' % (labels[j], round(predictions[0][j], 5)))

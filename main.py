@@ -3,23 +3,26 @@ import numpy as np
 import datasets
 from mlc_model import Model
 
-pretrain_vgg_19_ckpt_path = '/Users/oviyat/Desktop/cx/ThoraxDiseaseClassification-master/ThoraxDiseaseClassification-master/data/pretrain_vgg'
+pretrain_vgg_19_ckpt_path = 'data/pretrain_vgg/vgg_19.ckpt'
 #'/home/wanglei/workshop/b_pre_train_model/vgg/vgg_19.ckpt'
 train_tfrecord_name_path = 'data/train_tfrecord_name.txt'
 test_tfrecord_name_path = 'data/test_tfrecord_name.txt'
 summary_path = 'data/summary'                               # data/summary to save events tf.summary
 model_path_save = 'data/model/my-test'                      # data/model to save my-test-xxx.ckpt
 
-num_epochs = 101
-train_val_num = 86524
-test_num = 25596
+num_epochs = 5  #101
+#train_val_num = 86524
+#test_num = 25596
+#oviya changed above
+train_val_num = 1376
+test_num = 345
 
 def train():
     md = Model(is_training=True)
 
     print('---Read Data...')
     image_batch, label_batch, mask_beta_batch, mask_lambda_batch = datasets.get_train_batch(train_tfrecord_name_path, md.batch_size)
-    # print(image_batch)
+    #print(image_batch)
 
     print('---Training Model...')
     init_fn = tf.contrib.slim.assign_from_checkpoint_fn(pretrain_vgg_19_ckpt_path, tf.contrib.slim.get_model_variables('vgg_19'))  # 'vgg_19'
@@ -37,7 +40,8 @@ def train():
         iter = 0
         loss_list = []
         for epoch in range(num_epochs):
-            for _ in range(train_val_num / md.batch_size):
+            #oviya added the round() below
+            for _ in range(round(train_val_num / md.batch_size)):
                 images, labels, mask_betas, mask_lambdas = sess.run([image_batch, label_batch, mask_beta_batch, mask_lambda_batch])
                 feed_dict = {md.images: images,
                              md.labels: labels,
@@ -48,10 +52,12 @@ def train():
                 loss_list.append(_loss)
 
                 iter += 1
-                if iter % 1000 == 0:
+                if iter % 10 == 0:
+                #oviya changed above: if iter % 1000 == 0:
                     print('epoch = %s, iter = %s, loss = %s' % (epoch, iter, np.mean(loss_list)))
                     loss_list = []
-                if iter % 1000 == 0:
+                if iter % 10 == 0:
+                # oviya changed above: if iter % 1000 == 0:
                     saver.save(sess, model_path_save, global_step=iter)
 
         coord.request_stop()
