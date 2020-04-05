@@ -6,12 +6,19 @@ from mlc_model import Model
 from utils import image_utils
 
 image_path = 'data/examples/CXR3_IM-1384-1001.png'
-#oviya added /examples to image path above
+#image_path = 'data/examples/card1.png'
+#image_path = 'data/examples/card2.png'
+#image_path = 'data/examples/ed1.png'
+#oviya added #
 
 FLAGS = tf.app.flags.FLAGS
 tf.flags.DEFINE_string('img', 'data/examples/CXR3_IM-1384-1001.png', 'The test image path')
+#tf.flags.DEFINE_string('img', 'data/examples/card1.png', 'The test image path')
+#tf.flags.DEFINE_string('img', 'data/examples/card2.png', 'The test image path')
+#tf.flags.DEFINE_string('img', 'data/examples/ed1.png', 'The test image path')
+#oviya added #
 
-model_path = 'data/model/my-test-82000'
+model_path = 'data/model/my-test-110'
 #oviya changed: model_path = 'data/model/my-test-68000'
 data_label_path = 'data/data_label.json'
 

@@ -88,7 +88,8 @@ def eval(model_path):
         loss_list = []
 
         iter = 0
-        epochs = test_num / md.batch_size
+        #oviya added round below
+        epochs = round(test_num / md.batch_size)
         auc_predict = np.zeros([epochs * md.batch_size, md.label_num])
         auc_label = np.zeros([epochs * md.batch_size, md.label_num])
         threshold = 0.5 * np.ones([md.label_num])
@@ -130,7 +131,7 @@ def eval(model_path):
         for i in range(md.label_num):
             temp_auc = sess.run(auc_op, feed_dict={temp_label_tp: auc_label[:, i], predictions_tp: auc_predict[:, i]})
             auc_list.append(temp_auc)
-        # print(auc_list)
+        print(auc_list)
         print('mean loss = %s, mean auc = %s, %s' % (np.mean(loss_list), np.mean(auc_list), auc_list))
 
         # 2. recall and prediction
@@ -165,7 +166,7 @@ def eval(model_path):
 
     print('Test end.')
 
-train()
+#train()
 
-model_path = 'data/model/my-test-82000'
+model_path = 'data/model/my-test-110'
 eval(model_path)
