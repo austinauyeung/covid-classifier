@@ -166,7 +166,7 @@ def eval(model_path):
 
     print('Test end.')
 
-#train()
+train()
 
 model_path = 'data/model/my-test-110'
 eval(model_path)
