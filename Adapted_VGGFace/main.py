@@ -20,17 +20,17 @@ from keras_vggface.vggface import VGGFace
 #print(os.listir("./dataset"))
 classes = os.listdir("./dataset/train")
 
-train_images = glob("./dataset/train/*/*.jpeg")
-train_images = [ x.replace("\\", "/") for x in train_images]
+train_images = glob("./dataset/train/*/*")
+train_images = [ x.replace("\\", "/") for x in train_images ]
 
-test_images =  glob("./dataset/test/*/*.jpeg")
-test_images = [ x.replace("\\", "/") for x in test_images]
+test_images =  glob("./dataset/test/*/*")
+test_images = [ x.replace("\\", "/") for x in test_images ]
 
-print("\n\n================ DATA SET INFO. ========================")
+print("\n\n======================================== DATA SET INFO. =========================================\n")
 print("Classes Found: " + str(classes))
 print("Number of Train Images Found: " + str(len(train_images)))
 print("Number of Test Images Found: " + str(len(test_images)))
-print("=========================================================\n")
+print("\n==================================================================================================\n")
 
 
 train_class_to_img_map = defaultdict(list)
