@@ -2,11 +2,6 @@
 Statistical Machine Learning Project
 
 code for CNN:
-https://github.com/sasonhuang/Digital-Radiography (nih?, resnet50, c: 0.896, e: 0.882)
-
-
-https://github.com/wangleihitcs/ThoraxDiseaseClassification (nih, vgg19, c:.77, e:.76)
-(saved oviya modified files in github; installed tensorflow version 1.15 to run main.py)
 
 siamese code:
 https://github.com/nishit94/Python-Siamese-Network/blob/master/Siamese%20Network.py
