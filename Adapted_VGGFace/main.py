@@ -19,10 +19,15 @@ from keras_vggface.vggface import VGGFace
 
 #print(os.listir("./dataset"))
 classes = os.listdir("./dataset/train")
-print(classes)
 
-train_images = glob("./dataset/train/*/*.jpg")
-test_images =  glob("./dataset/test/*/*.jpg")
+print("Classes Found: " + str(classes))
+
+train_images = glob("./dataset/train/*/*.jpeg")
+test_images =  glob("./dataset/test/*/*.jpeg")
+
+print("Number of Train Images Found: " + str(len(train_images)))
+print("Number of Test Images Found: " + str(len(test_images)))
+
 
 train_class_to_img_map = defaultdict(list)
 for x in train_images:
@@ -62,8 +67,12 @@ def baseline_model():
 
     base_model = VGGFace(model='resnet50', include_top=False)
 
-    for x in base_model.layers[:-3]:
+    # Make trainable only the last 3 layers
+    for x in base_model.layers[-3:]:
         x.trainable = True
+
+    for x in base_model.layers[:-3]:
+        x.trainable = False
 
     x1 = base_model(input_1)
     x2 = base_model(input_2)
