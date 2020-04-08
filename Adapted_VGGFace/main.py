@@ -20,13 +20,17 @@ from keras_vggface.vggface import VGGFace
 #print(os.listir("./dataset"))
 classes = os.listdir("./dataset/train")
 
-print("Classes Found: " + str(classes))
-
 train_images = glob("./dataset/train/*/*.jpeg")
-test_images =  glob("./dataset/test/*/*.jpeg")
+train_images = [ x.replace("\\", "/") for x in train_images]
 
+test_images =  glob("./dataset/test/*/*.jpeg")
+test_images = [ x.replace("\\", "/") for x in test_images]
+
+print("\n\n================ DATA SET INFO. ========================")
+print("Classes Found: " + str(classes))
 print("Number of Train Images Found: " + str(len(train_images)))
 print("Number of Test Images Found: " + str(len(test_images)))
+print("=========================================================\n")
 
 
 train_class_to_img_map = defaultdict(list)
@@ -106,19 +110,23 @@ def baseline_model():
 
     return model
 
-file_path = "weights.h5"
+def main():
+    file_path = "weights.h5"
 
-checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
-reduce_on_plateau = ReduceLROnPlateau(monitor="val_acc", mode="max", factor=0.1, patience=20, verbose=1)
+    reduce_on_plateau = ReduceLROnPlateau(monitor="val_acc", mode="max", factor=0.1, patience=20, verbose=1)
 
-callbacks_list = [checkpoint, reduce_on_plateau]
+    callbacks_list = [checkpoint, reduce_on_plateau]
 
-model = baseline_model()
+    model = baseline_model()
 
-if os.path.exists(file_path):
-    model.load_weights(file_path)
+    if os.path.exists(file_path):
+        model.load_weights(file_path)
 
-model.fit_generator(gen(train_class_to_img_map, batch_size=16), use_multiprocessing=True,
-                    validation_data=gen(test_class_to_img_map, batch_size=16), epochs=100, verbose=2,
-                    workers=4, callbacks=callbacks_list, steps_per_epoch=200, validation_steps=100)
+    model.fit_generator(gen(train_class_to_img_map, batch_size=16), validation_data=gen(test_class_to_img_map,\
+                        batch_size=16), epochs=100, verbose=2, callbacks=callbacks_list, steps_per_epoch=200, \
+                        validation_steps=100)
+
+if __name__ == '__main__':
+    main()
