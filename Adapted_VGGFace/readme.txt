@@ -2,7 +2,7 @@ Made Following:
 https://www.kaggle.com/hsinwenchang/vggface-baseline-197x197
 
 Siamese Network for decease classification with x-ray images.
-Base on exsisting pretrained Siamese Newtork for face recognition.
+Based on exsisting pretrained Siamese Newtork for face recognition.
 
 Structure of Dataset:
                       dataset
