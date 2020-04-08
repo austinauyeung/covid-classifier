@@ -8,7 +8,7 @@ Structure of Dataset:
                       dataset
              ____________|____________
             |                         |
-        train                        test
+         train                       test
         ___|____                   ___|___ 
        |        |                 |       |
   decease1  decease2         decease1  decease2
