@@ -12,7 +12,9 @@ data
               .
               .
               
-Now run sorter to create test.txt and train.txt files containing full paths to Cardiomegaly and Normal (No Finding) images. Next use the following python function to create train and test dictionaries. Note that sorter can easily be modified to sort and return other diseases as well (No need to modify get_dataset).
+Now run sorter to create test.txt and train.txt files containing full paths to Cardiomegaly and Normal (No Finding) images. 
+Next use the following python function to create train and test dictionaries. 
+Note that sorter can easily be modified to sort and return other diseases as well (No need to modify get_dataset).
 
 def get_dataset(filename):
     dataset = defaultdict(list)
