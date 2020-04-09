@@ -17,27 +17,29 @@ from keras.optimizers import Adam
 
 from keras_vggface.vggface import VGGFace
 
-def get_dataset(filename):
-    dataset = defaultdict(list)
-    class_name = None
-    with open(filename, 'r') as datafile:
-        lines = datafile.readlines()
-        for line in lines:
-            if '#' in line:
-                class_name = line[1:-1]
-            else:
-                dataset[class_name].append(line[:-1])
-    return dataset
+#print(os.listir("./dataset"))
+classes = os.listdir("./dataset/train")
 
-train_class_to_img_map = get_dataset("train.txt")
-test_class_to_img_map = get_dataset("test.txt")
-classes = list(train_class_to_img_map.keys())
+train_images = glob("./dataset/train/*/*")
+train_images = [ x.replace("\\", "/") for x in train_images ]
+
+test_images =  glob("./dataset/test/*/*")
+test_images = [ x.replace("\\", "/") for x in test_images ]
 
 print("\n\n======================================== DATA SET INFO. =========================================\n")
 print("Classes Found: " + str(classes))
-print("Number of Train Images Found: " + str(sum([len(x) for x in train_class_to_img_map.values()])))
-print("Number of Test Images Found:  " + str(sum([len(x) for x in test_class_to_img_map.values()])))
+print("Number of Train Images Found: " + str(len(train_images)))
+print("Number of Test Images Found: " + str(len(test_images)))
 print("\n==================================================================================================\n")
+
+
+train_class_to_img_map = defaultdict(list)
+for x in train_images:
+    train_class_to_img_map[x.split("/")[-2]].append(x)
+
+test_class_to_img_map = defaultdict(list)
+for x in test_images:
+    test_class_to_img_map[x.split("/")[-2]].append(x)
 
 
 def read_img(path):
@@ -78,6 +80,12 @@ def baseline_model():
 
     x1 = base_model(input_1)
     x2 = base_model(input_2)
+
+#     x1_ = Reshape(target_shape=(7*7, 2048))(x1)
+#     x2_ = Reshape(target_shape=(7*7, 2048))(x2)
+#     #
+#     x_dot = Dot(axes=[2, 2], normalize=True)([x1_, x2_])
+#     x_dot = Flatten()(x_dot)
 
     x1 = Concatenate(axis=-1)([GlobalMaxPool2D()(x1), GlobalAvgPool2D()(x1)])
     x2 = Concatenate(axis=-1)([GlobalMaxPool2D()(x2), GlobalAvgPool2D()(x2)])
