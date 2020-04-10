@@ -12,7 +12,7 @@ import os
 
 # Selecting all combination of 'COVID-19' patients with 'PA' X-Ray view
 virus = "COVID-19" # Virus to look for
-x_ray_view = "AP" # View of X-Ray #Oviya: we want: AP, AP semi erect, AP Supine, Coronal, PA
+x_ray_view = ["AP", "AP semi erect", "AP Supine", "Coronal", "PA"] # View of X-Ray #Oviya: we want: AP, AP semi erect, AP Supine, Coronal, PA
 
 metadata = '/Users/oviyat/Desktop/CX/covid-chestxray-dataset-master/covid-chestxray-dataset-master/metadata.csv' # Meta info
 imageDir = '/Users/oviyat/Desktop/CX/covid-chestxray-dataset-master/covid-chestxray-dataset-master/images'
@@ -23,7 +23,7 @@ metadata_csv = pd.read_csv(metadata)
 
 # loop over the rows of the COVID-19 data frame
 for (i, row) in metadata_csv.iterrows():
-	if row["finding"] != virus or row["view"] != x_ray_view:
+	if row["finding"] != virus or (row["view"] not in x_ray_view):
 		continue
 
 	filename = row["filename"].split(os.path.sep)[-1]
