@@ -1,0 +1,239 @@
+(base) group12@WangLab:~/siamese_vgg$ CUDA_VISIBLE_DEVICES=3 python siamese_vgg.py
+Using TensorFlow backend.
+2020-04-16 04:11:38.816518: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-04-16 04:11:38.825612: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2596985000 Hz
+2020-04-16 04:11:38.828173: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x56400f145e50 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-04-16 04:11:38.828208: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+2020-04-16 04:11:38.829364: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-04-16 04:11:38.879830: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: a58b:00:00.0 name: Tesla K80 computeCapability: 3.7
+coreClock: 0.8235GHz coreCount: 13 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 223.96GiB/s
+2020-04-16 04:11:38.880069: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-04-16 04:11:38.881853: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-04-16 04:11:38.883532: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-04-16 04:11:38.883836: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-04-16 04:11:38.885657: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-04-16 04:11:38.886698: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-04-16 04:11:38.890843: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-04-16 04:11:38.892880: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-04-16 04:11:38.892951: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-04-16 04:11:39.053768: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1096] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-04-16 04:11:39.053809: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1102]      0 
+2020-04-16 04:11:39.053831: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] 0:   N 
+2020-04-16 04:11:39.057324: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1241] Created TensorFlow device (/device:GPU:0 with 10805 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: a58b:00:00.0, compute capability: 3.7)
+2020-04-16 04:11:39.059686: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x56400ff49670 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2020-04-16 04:11:39.059712: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Tesla K80, Compute Capability 3.7
+[name: "/device:CPU:0"
+device_type: "CPU"
+memory_limit: 268435456
+locality {
+}
+incarnation: 13988015667431878259
+, name: "/device:XLA_CPU:0"
+device_type: "XLA_CPU"
+memory_limit: 17179869184
+locality {
+}
+incarnation: 9236923122934942377
+physical_device_desc: "device: XLA_CPU device"
+, name: "/device:GPU:0"
+device_type: "GPU"
+memory_limit: 11330115994
+locality {
+  bus_id: 1
+  links {
+  }
+}
+incarnation: 3062550358510131373
+physical_device_desc: "device: 0, name: Tesla K80, pci bus id: a58b:00:00.0, compute capability: 3.7"
+, name: "/device:XLA_GPU:0"
+device_type: "XLA_GPU"
+memory_limit: 17179869184
+locality {
+}
+incarnation: 10265291398556946183
+physical_device_desc: "device: XLA_GPU device"
+]
+2020-04-16 04:11:39.061408: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: a58b:00:00.0 name: Tesla K80 computeCapability: 3.7
+coreClock: 0.8235GHz coreCount: 13 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 223.96GiB/s
+2020-04-16 04:11:39.061482: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-04-16 04:11:39.061513: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-04-16 04:11:39.061541: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-04-16 04:11:39.061568: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-04-16 04:11:39.061595: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-04-16 04:11:39.061622: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-04-16 04:11:39.061650: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-04-16 04:11:39.063543: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+Number of GPUs available:  1
+
+COVID training set size: 100
+Pneumonia training set size: 100
+Total training set size: 200
+
+COVID testing set size: 74
+Pneumonia testing set size: 222
+Total testing set size: 296
+
+Number of COVID pictures to average for classifier: 5
+
+Maximum training pairs size:
+     With class balance: 19900
+     Without class balance: 19900.0
+Maximum testing pairs size:
+     With class balance: 10878
+     Without class balance: 43660.0
+Maximum classification pairs size:
+     With class balance: 148
+     Without class balance: 296
+Balancing training pairs: True
+Balancing testing pairs: True
+Balancing classification pairs: False
+
+Training pairs size: 19900
+Testing pairs size: 10878
+Classification pairs size: 296
+2020-04-16 04:12:10.479058: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: a58b:00:00.0 name: Tesla K80 computeCapability: 3.7
+coreClock: 0.8235GHz coreCount: 13 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 223.96GiB/s
+2020-04-16 04:12:10.479167: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-04-16 04:12:10.479200: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-04-16 04:12:10.479232: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-04-16 04:12:10.479259: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-04-16 04:12:10.479285: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-04-16 04:12:10.479312: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-04-16 04:12:10.479340: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-04-16 04:12:10.481235: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-04-16 04:12:10.481296: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1096] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-04-16 04:12:10.481311: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1102]      0 
+2020-04-16 04:12:10.481321: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] 0:   N 
+2020-04-16 04:12:10.483999: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1241] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10805 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: a58b:00:00.0, compute capability: 3.7)
+Model: "model_2"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_2 (InputLayer)            (None, 224, 224, 3)  0                                            
+__________________________________________________________________________________________________
+input_3 (InputLayer)            (None, 224, 224, 3)  0                                            
+__________________________________________________________________________________________________
+model_1 (Model)                 (None, 128)          14796864    input_2[0][0]                    
+                                                                 input_3[0][0]                    
+__________________________________________________________________________________________________
+lambda_1 (Lambda)               (None, 1)            0           model_1[1][0]                    
+                                                                 model_1[2][0]                    
+==================================================================================================
+Total params: 14,796,864
+Trainable params: 7,161,600
+Non-trainable params: 7,635,264
+__________________________________________________________________________________________________
+Epoch 1/50
+2020-04-16 04:12:12.680824: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-04-16 04:12:12.864087: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+19900/19900 [==============================] - 432s 22ms/step - loss: 0.2730 - accuracy: 0.9225
+Epoch 2/50
+19900/19900 [==============================] - 416s 21ms/step - loss: 0.0474 - accuracy: 0.9999
+Epoch 3/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0353 - accuracy: 1.0000
+Epoch 4/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0291 - accuracy: 1.0000
+Epoch 5/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0242 - accuracy: 1.0000
+Epoch 6/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0218 - accuracy: 1.0000
+Epoch 7/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0205 - accuracy: 1.0000
+Epoch 8/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0189 - accuracy: 1.0000
+Epoch 9/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0175 - accuracy: 1.0000
+Epoch 10/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0169 - accuracy: 1.0000
+Epoch 11/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0157 - accuracy: 1.0000
+Epoch 12/50
+19900/19900 [==============================] - 414s 21ms/step - loss: 0.0149 - accuracy: 1.0000
+Epoch 13/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0138 - accuracy: 1.0000
+Epoch 14/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0132 - accuracy: 1.0000
+Epoch 15/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0126 - accuracy: 1.0000
+Epoch 16/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0122 - accuracy: 1.0000
+Epoch 17/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0113 - accuracy: 1.0000
+Epoch 18/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0113 - accuracy: 1.0000
+Epoch 19/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0105 - accuracy: 1.0000
+Epoch 20/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0105 - accuracy: 1.0000
+Epoch 21/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0101 - accuracy: 1.0000
+Epoch 22/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0091 - accuracy: 1.0000
+Epoch 23/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0094 - accuracy: 1.0000
+Epoch 24/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0091 - accuracy: 1.0000
+Epoch 25/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0087 - accuracy: 1.0000
+Epoch 26/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0087 - accuracy: 1.0000
+Epoch 27/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0087 - accuracy: 1.0000
+Epoch 28/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0084 - accuracy: 1.0000
+Epoch 29/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0957 - accuracy: 0.9739
+Epoch 30/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0170 - accuracy: 1.0000
+Epoch 31/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0150 - accuracy: 0.9999
+Epoch 32/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0126 - accuracy: 1.0000
+Epoch 33/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0099 - accuracy: 1.0000
+Epoch 34/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0087 - accuracy: 1.0000
+Epoch 35/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0080 - accuracy: 1.0000
+Epoch 36/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0068 - accuracy: 1.0000
+Epoch 37/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0063 - accuracy: 1.0000
+Epoch 38/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0056 - accuracy: 1.0000
+Epoch 39/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0049 - accuracy: 1.0000
+Epoch 40/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0044 - accuracy: 1.0000
+Epoch 41/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0039 - accuracy: 1.0000
+Epoch 42/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0037 - accuracy: 1.0000
+Epoch 43/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0034 - accuracy: 1.0000
+Epoch 44/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0031 - accuracy: 1.0000
+Epoch 45/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0028 - accuracy: 0.9999
+Epoch 46/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0024 - accuracy: 1.0000
+Epoch 47/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0022 - accuracy: 0.9999
+Epoch 48/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0021 - accuracy: 0.9999
+Epoch 49/50
+19900/19900 [==============================] - 412s 21ms/step - loss: 0.0017 - accuracy: 0.9999
+Epoch 50/50
+19900/19900 [==============================] - 413s 21ms/step - loss: 0.0018 - accuracy: 0.9998
+* Accuracy on training set: 100.00%
+* Accuracy on test set: 86.95%
+* Accuracy on classification set: 97.30%
+True positives: 70.0
+True negatives: 218.0
+False positives: 4.0
+False negatives: 4.0
+Sensitivity: 0.9459459459459459
+Specificity: 0.9819819819819819
