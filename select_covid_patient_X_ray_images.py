@@ -12,13 +12,15 @@ import os
 
 # Selecting all combination of 'COVID-19' patients with 'PA' X-Ray view
 virus = "COVID-19" # Virus to look for
-x_ray_view = ["AP", "AP semi erect", "AP Supine", "Coronal", "PA"] # View of X-Ray #Oviya: we want: AP, AP semi erect, AP Supine, Coronal, PA
+x_ray_view = ["AP", "AP semi erect", "AP Supine", "Coronal", "PA"] # View of X-Ray
 
-metadata = '/Users/oviyat/Desktop/CX/covid-chestxray-dataset-master/covid-chestxray-dataset-master/metadata.csv' # Meta info
-imageDir = '/Users/oviyat/Desktop/CX/covid-chestxray-dataset-master/covid-chestxray-dataset-master/images'
-#imageDir = "./images" # Directory of images
-outputDir = '/Users/oviyat/Desktop/CX/covid-chestxray-dataset-master/covid-chestxray-dataset-master/output' # Output directory to store selected images
-
+metadata = os.getcwd()+'/metadata.csv' # Meta info
+imageDir = os.getcwd()+'/images' # Directory of images
+outputDir = os.getcwd()+'/output' # Output directory to store selected images
+try:
+	os.mkdir(outputDir)
+except:
+	print('Output directory already exists.')
 metadata_csv = pd.read_csv(metadata)
 
 # loop over the rows of the COVID-19 data frame
@@ -26,9 +28,11 @@ for (i, row) in metadata_csv.iterrows():
 	if row["finding"] != virus or (row["view"] not in x_ray_view):
 		continue
 
-	filename = row["filename"].split(os.path.sep)[-1]
-	imagepath = os.path.sep.join([imageDir, filename]) #oviya line
-	outputPath = os.path.sep.join([outputDir, filename])
-	#shutil.copy2(imageDir, outputPath)
-	shutil.move(imagepath, outputPath) #oviya line
+	try:
+		filename = row["filename"].split(os.path.sep)[-1]
+		inputPath = os.path.sep.join([imageDir, filename])
+		outputPath = os.path.sep.join([outputDir, filename])
+		shutil.move(inputPath, outputPath)
+	except:
+		print(filename+' not found, may have been moved already.')
 
