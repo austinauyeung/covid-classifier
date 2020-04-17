@@ -7,10 +7,10 @@ import keras
 import tensorflow as tf
 import helpers as hp
 from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array, array_to_img
-from sklearn.preprocessing import LabelEncoder
-from keras.layers import Input, Lambda
+from keras.layers import Input, Lambda, Dense, Dropout, BatchNormalization
 from keras.models import Model, load_model
 from keras import optimizers
+from keras.utils import to_categorical
 from tensorflow.python.client import device_lib
 
 print(device_lib.list_local_devices())
@@ -83,14 +83,16 @@ pne_train_imgs = [img_to_array(load_img(img,target_size=IMG_DIM,color_mode="rgb"
 # create corresponding labels
 train_imgs = np.array(cov_train_imgs+pne_train_imgs)
 train_imgs_scaled = train_imgs.astype('float32')/255
-train_labels = cov_train_num*['c']+pne_train_num*['p']
+train_labels = np.array(cov_train_num*[1]+pne_train_num*[0])
+train_labels_enc = to_categorical(train_labels)
 
 # load test images and create corresponding labels
 cov_test_imgs = [img_to_array(load_img(img,target_size=IMG_DIM,color_mode="rgb")) for img in cov_test]
 pne_test_imgs = [img_to_array(load_img(img,target_size=IMG_DIM,color_mode="rgb")) for img in pne_test]
 test_imgs = np.array(cov_test_imgs+pne_test_imgs)
 test_imgs_scaled = test_imgs.astype('float32')/255
-test_labels = cov_test_num*['c']+pne_test_num*['p']
+test_labels = np.array(cov_test_num*[1]+pne_test_num*[0])
+test_labels_enc = to_categorical(test_labels)
 
 # create average covid image
 covavg_imgs = np.array([img_to_array(load_img(img,target_size=IMG_DIM,color_mode="rgb")) for img in cov_avg])
@@ -101,17 +103,11 @@ plt.title('Average COVID image')
 plt.imshow(array_to_img(covavg_imgs_scaled[0]))
 plt.show()
 
-# encode class labels as 0/1
-le = LabelEncoder()
-le.fit(train_labels)
-train_labels_enc = le.transform(train_labels)
-test_labels_enc = le.transform(test_labels)
-
 # create positive and negative pairs
-idx = [np.where(train_labels_enc==i)[0] for i in range(num_classes)]
+idx = [np.where(train_labels==i)[0] for i in range(num_classes)]
 tr_pairs, tr_y = hp.create_all_pairs(num_classes,train_imgs_scaled,idx,train_balance)
 
-idx = [np.where(test_labels_enc==i)[0] for i in range(num_classes)]
+idx = [np.where(test_labels==i)[0] for i in range(num_classes)]
 te_pairs, te_y = hp.create_all_pairs(num_classes,test_imgs_scaled,idx,test_balance)
 cl_pairs, cl_y = hp.covavg_pairs(num_classes,covavg_imgs_scaled,test_imgs_scaled,idx,cl_balance)
 
@@ -143,36 +139,37 @@ processed_a = base_network(input_a)
 processed_b = base_network(input_b)
 
 distance = Lambda(hp.euclidean_distance,output_shape=hp.eucl_dist_output_shape)([processed_a, processed_b])
-model = Model([input_a, input_b], distance)
-model.summary()
+vgg_siamese = Model([input_a, input_b], distance)
+vgg_siamese.summary()
 
 # train or load model
 load = 1
 adm = optimizers.Adam(lr=0.0001)
 if load:
-	model = load_model('weights_vggtwin_tr19900_ep10.h5',compile=False)
-	model.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
+	vgg_siamese = load_model('weights_vggtwin_tr19900_ep10.h5',compile=False)
+	vgg_siamese.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
 else:
 	epochs = 10;
-	model.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
-	model.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y,
+	vgg_siamese.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
+	vgg_siamese.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y,
 	          batch_size=128,
 	          epochs=epochs,
 	#           validation_data=([te_pairs[:10, 0], te_pairs[:10, 1]], te_y[:10]), # validate on small subset of testing dataset
 	          shuffle=True)
 
-	model.save('weights_vggtwin_tr'+str(tr_pairs.shape[0])+'_ep'+str(epochs)+'.h5')
+	vgg_siamese.save('weights_vggtwin_tr'+str(tr_pairs.shape[0])+'_ep'+str(epochs)+'.h5')
 
-tr_y_dist = model.predict([tr_pairs[:, 0], tr_pairs[:, 1]])
+tr_y_dist = vgg_siamese.predict([tr_pairs[:, 0], tr_pairs[:, 1]])
 tr_acc = hp.compute_accuracy(tr_y, tr_y_dist)
-te_y_dist = model.predict([te_pairs[:, 0], te_pairs[:, 1]])
+te_y_dist = vgg_siamese.predict([te_pairs[:, 0], te_pairs[:, 1]])
 te_acc = hp.compute_accuracy(te_y, te_y_dist)
-cl_y_dist = model.predict([cl_pairs[:, 0], cl_pairs[:, 1]])
+cl_y_dist = vgg_siamese.predict([cl_pairs[:, 0], cl_pairs[:, 1]])
 cl_acc = hp.compute_accuracy(cl_y, cl_y_dist)
 
 print('* Accuracy on training set: %0.2f%%' % (100 * tr_acc))
 print('* Accuracy on test set: %0.2f%%' % (100 * te_acc))
 print('* Accuracy on classification set: %0.2f%%' % (100 * cl_acc))
+print()
 
 threshold = 1
 cl_y_pred = hp.generate_label(cl_y_dist,threshold) # using half of margin for threshold

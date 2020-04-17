@@ -24,7 +24,6 @@ def vggnet_base(input_shape):
 def create_all_pairs(num_classes, x, class_indices, balance):
     '''Positive and negative pair creation.
     Use "balance" to toggle positive/negative pair balance.
-    Use "limit" to limit the number of pairs and conserve memory.
     '''
     pairs = []
     labels = []
@@ -71,14 +70,14 @@ def covavg_pairs(num_classes,x1,x2,class_indices,balance):
         n1 = len(class_indices[1])
     
     # create all positive pairs for each class
-    for i in range(n0):
-        z = class_indices[0][i]
+    for i in range(n1):
+        z = class_indices[1][i]
         pairs += [[x1[0], x2[z]]]
         labels += [1]
     
     # create all possible negative pairs
-    for i in range(n1):
-        z = class_indices[1][i]
+    for i in range(n0):
+        z = class_indices[0][i]
         pairs += [[x1[0], x2[z]]]
         labels += [0] 
                 
