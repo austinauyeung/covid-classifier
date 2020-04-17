@@ -22,8 +22,8 @@ cov = glob.glob(os.getcwd()+'/covid-chestxray-dataset-master/output/*')
 pne = glob.glob(os.getcwd()+'/pneumonia2/*')
 
 # parameters
-cov_train_num = 25
-pne_train_num = 25
+cov_train_num = 100
+pne_train_num = 100
 
 # select random subset of images for training
 cov_train = np.random.choice(cov,size=cov_train_num,replace=False)
@@ -65,11 +65,17 @@ test_imgs_scaled = test_imgs.astype('float32')/255
 test_labels = np.array(cov_test_num*[1]+pne_test_num*[0])
 test_labels_enc = to_categorical(test_labels)
 
+# load weights from siamese network
+adm = optimizers.Adam(lr=0.0001)
+vgg_siamese = load_model('weights_vggtwin_tr19900_ep10.h5',compile=False)
+vgg_siamese.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
+
 # create traditional classifier
 input_shape = (IMG_HEIGHT,IMG_WIDTH,train_imgs.shape[3])
-base_network = hp.vggnet_base(input_shape)
+extracted_network = vgg_siamese.get_layer('model_1')
+extracted_network.trainable = False
 input = Input(shape=input_shape)
-x = base_network(input)
+x = extracted_network(input)
 # x = Dense(64, activation='relu')(x)
 # x = Dropout(0.1)(x)
 x = BatchNormalization()(x)
@@ -77,7 +83,7 @@ x = Dense(2, activation='softmax')(x)
 vgg_traditional = Model(input,x)
 
 # train model
-epochs = 50;
+epochs = 100;
 adm = optimizers.Adam(lr=0.0001)
 vgg_traditional.compile(loss='categorical_crossentropy', optimizer=adm, metrics=['accuracy'])
 vgg_traditional.summary()
