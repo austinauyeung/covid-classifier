@@ -5,6 +5,7 @@ from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import numpy as np
 
 meta = pd.read_csv("Data_Entry_2017.csv")[['Patient ID', 'Finding Labels', 'Image Index', 'View Position']]
 
@@ -14,7 +15,7 @@ types = []
 for row in meta.iterrows():
     pid = int(row[1][0])
     t = row[1][1]
-    if("Pneumo" in t):
+    if("Pneumonia" in t):
         filename = row[1][2]
         view = row[1][3]
 
