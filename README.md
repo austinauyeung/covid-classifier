@@ -12,11 +12,8 @@ autoencoder:
 siamese:
 
 covidImageLoad2.py:
-
-COVID-19 Dataset: 
-Joseph Paul Cohen and Paul Morrison and Lan Dao
-COVID-19 image data collection, arXiv:2003.11597, 2020
-https://github.com/ieee8023/covid-chestxray-dataset
+ 
+Joseph Paul Cohen and Paul Morrison and Lan Dao COVID-19 image data collection (avaliable: https://github.com/ieee8023/covid-chestxray-dataset).
 
 covidImageLoad3.py:
   
