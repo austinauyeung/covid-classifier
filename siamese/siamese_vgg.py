@@ -1,36 +1,51 @@
 import glob
 import numpy as np
 import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import random
 import keras
 import tensorflow as tf
 import helpers as hp
-from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array, array_to_img
+from keras.preprocessing.image import load_img, img_to_array, array_to_img
 from keras.layers import Input, Lambda, Dense, Dropout, BatchNormalization
 from keras.models import Model, load_model
 from keras import optimizers
 from keras.utils import to_categorical
 from tensorflow.python.client import device_lib
+import pickle
 
 print(device_lib.list_local_devices())
 print("Number of GPUs available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 print()
 
+load_dir = 1
+load_mod = 0
+
+source_cov = hp.source_cov
+source_pne = hp.source_pne
+
 # set to image directory
-cov = glob.glob(os.getcwd()+'/covid-chestxray-dataset-master/output/*')
-pne = glob.glob(os.getcwd()+'/pneumonia2/*')
+cov = glob.glob(source_cov+'*')
+pne = glob.glob(source_pne+'*')
 
 # parameters
-cov_train_num = 100
-pne_train_num = 100
+cov_train_num = hp.cov_train_num
+pne_train_num = hp.pne_train_num
 cov_avg_num = 5
-
 num_classes = 2
 
 # select random subset of images for training
-cov_train = np.random.choice(cov,size=cov_train_num,replace=False)
-pne_train = np.random.choice(pne,size=pne_train_num,replace=False)
+if load_dir:
+	with open('directory.pkl','rb') as f:
+		cov_train, pne_train = pickle.load(f)
+	cov_train = [source_cov+img.split(os.sep)[-1] for img in cov_train]
+	pne_train = [source_pne+img.split(os.sep)[-1] for img in pne_train]
+else:
+	cov_train = np.random.choice(cov,size=cov_train_num,replace=False)
+	pne_train = np.random.choice(pne,size=pne_train_num,replace=False)
+	with open('directory.pkl','wb') as f:
+		pickle.dump([cov_train, pne_train],f)
+
 cov_test = list(set(cov)-set(cov_train))
 pne_test = list(set(pne)-set(pne_train))
 cov_avg = np.random.choice(cov_test,size=cov_avg_num,replace=False)
@@ -69,8 +84,8 @@ print('     Without class balance: '+str(n1+n2))
 train_balance = 1;
 test_balance = 1;
 cl_balance = 0;
-num_tr_pairs = 19900;
-num_te_pairs = 10878;
+num_tr_pairs = 4096;
+num_te_pairs = 1431;
 
 IMG_WIDTH = 224
 IMG_HEIGHT = 224
@@ -99,9 +114,9 @@ covavg_imgs = np.array([img_to_array(load_img(img,target_size=IMG_DIM,color_mode
 covavg_imgs_scaled = covavg_imgs.astype('float32')/255
 if len(covavg_imgs_scaled.shape)>3:
     covavg_imgs_scaled = np.expand_dims(np.mean(covavg_imgs_scaled,axis=0),axis=0)
-plt.title('Average COVID image')
-plt.imshow(array_to_img(covavg_imgs_scaled[0]))
-plt.show()
+# plt.title('Average COVID image')
+# plt.imshow(array_to_img(covavg_imgs_scaled[0]))
+# plt.show()
 
 # create positive and negative pairs
 idx = [np.where(train_labels==i)[0] for i in range(num_classes)]
@@ -141,29 +156,43 @@ processed_b = base_network(input_b)
 distance = Lambda(hp.euclidean_distance,output_shape=hp.eucl_dist_output_shape)([processed_a, processed_b])
 vgg_siamese = Model([input_a, input_b], distance)
 vgg_siamese.summary()
+for layer in vgg_siamese.layers[2].layers:
+    print(layer, layer.trainable)
+vgg_siamese.layers[2].summary()
 
 # train or load model
-load = 1
-adm = optimizers.Adam(lr=0.0001)
-if load:
-	vgg_siamese = load_model('weights_vggtwin_tr19900_ep10.h5',compile=False)
+generator = 1
+batch_size = hp.batch_size
+adm = optimizers.Adam(lr=1e-4)
+if load_mod:
+	vgg_siamese = load_model('vggtwin_tr11175_ep50.h5',compile=False)
 	vgg_siamese.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
 else:
-	epochs = 10;
+	epochs = 20
 	vgg_siamese.compile(loss=hp.contrastive_loss, optimizer=adm, metrics=[hp.accuracy])
-	vgg_siamese.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y,
-	          batch_size=128,
-	          epochs=epochs,
-	#           validation_data=([te_pairs[:10, 0], te_pairs[:10, 1]], te_y[:10]), # validate on small subset of testing dataset
-	          shuffle=True)
+	if generator:
+		vgg_siamese.fit_generator(hp.trainGenerator2(tr_pairs[:, 0],tr_pairs[:, 1],tr_y),
+		steps_per_epoch=np.ceil(tr_pairs.shape[0]/batch_size),
+		epochs=epochs,
+		validation_data=([te_pairs[:, 0], te_pairs[:, 1]], te_y),
+		shuffle=True,
+		verbose=1)
 
-	vgg_siamese.save('weights_vggtwin_tr'+str(tr_pairs.shape[0])+'_ep'+str(epochs)+'.h5')
+	else:
+		vgg_siamese.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y,
+				batch_size=batch_size,
+				epochs=epochs,
+				validation_data=([te_pairs[:, 0], te_pairs[:, 1]], te_y), # validate on small subset of testing dataset
+				shuffle=True)
+
+	vgg_siamese.save('vggtwin_tr'+str(tr_pairs.shape[0])+'_ep'+str(epochs)+'_g'+str(generator)+'.h5')
 
 tr_y_dist = vgg_siamese.predict([tr_pairs[:, 0], tr_pairs[:, 1]])
-tr_acc = hp.compute_accuracy(tr_y, tr_y_dist)
 te_y_dist = vgg_siamese.predict([te_pairs[:, 0], te_pairs[:, 1]])
-te_acc = hp.compute_accuracy(te_y, te_y_dist)
 cl_y_dist = vgg_siamese.predict([cl_pairs[:, 0], cl_pairs[:, 1]])
+
+tr_acc = hp.compute_accuracy(tr_y, tr_y_dist)
+te_acc = hp.compute_accuracy(te_y, te_y_dist)
 cl_acc = hp.compute_accuracy(cl_y, cl_y_dist)
 
 print('* Accuracy on training set: %0.2f%%' % (100 * tr_acc))
@@ -171,7 +200,7 @@ print('* Accuracy on test set: %0.2f%%' % (100 * te_acc))
 print('* Accuracy on classification set: %0.2f%%' % (100 * cl_acc))
 print()
 
-threshold = 1
+threshold = hp.threshold
 cl_y_pred = hp.generate_label(cl_y_dist,threshold) # using half of margin for threshold
 tp,tn,fp,fn,sensitivity,specificity = hp.generate_metrics(cl_y,cl_y_pred)
 print('True positives: '+str(tp))
