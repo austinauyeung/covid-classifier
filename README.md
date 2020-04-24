@@ -14,3 +14,5 @@ siamese:
 covidImageLoad2.py: Relabels the the files in the COVID-19 dataset by their class and patient ID number (avaliable: https://github.com/ieee8023/covid-chestxray-dataset).
 
 covidImageLoad3.py: Relabels the the files in the NIH dataset by their class and patient ID number (avaliable: https://www.kaggle.com/nih-chest-xrays/data)
+
+sort_processed2: Sorts the relabeled files into the folders with the name of their classes.
